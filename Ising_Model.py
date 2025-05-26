@@ -145,12 +145,12 @@ def plot_spin_configurations(initial_spins, final_spins, temperature):
     
     # Configuración inicial
     im1 = ax1.imshow(initial_spins, cmap='coolwarm', vmin=-1, vmax=1)
-    ax1.set_title(f'Configuración inicial (T = {temperature:.3f})')
+    ax1.set_title(f'Initial Configuration (T = {temperature:.3f})')
     ax1.axis('off')
     
     # Configuración final
     im2 = ax2.imshow(final_spins, cmap='coolwarm', vmin=-1, vmax=1)
-    ax2.set_title(f'Configuración final (T = {temperature:.3f})')
+    ax2.set_title(f'Final Configuration (T = {temperature:.3f})')
     ax2.axis('off')
     
     # Barra de color compartida
@@ -158,7 +158,7 @@ def plot_spin_configurations(initial_spins, final_spins, temperature):
     fig.colorbar(im2, cax=cax, label='Spin value')
     cax.set_yticks([-1, 0, 1])
     
-    plt.savefig(f'spin_configs_T_{temperature:.3f}.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'Results/spin_configs_T_{temperature:.3f}.png', dpi=300, bbox_inches='tight')
     plt.close()
 
 def plot_results(results):
@@ -171,29 +171,37 @@ def plot_results(results):
     fig, ax = plt.subplots(3, 1, figsize=(10, 12))
     
     # Gráfico de energía
-    ax[0].plot(Ts, Es, 'o-', color='royalblue', label='Simulation')
-    ax[0].axvline(x=2.269, color='red', linestyle='--', label='Critical T')
-    ax[0].set_xlabel(r'Temperature ($k_BT/J$)')
-    ax[0].set_ylabel(r'Energy per spin ($E/J$)')
-    ax[0].legend()
-    ax[0].grid(alpha=0.3)
+    plt.figure(figsize=(8, 5))
+    plt.plot(Ts, Es, 'o-', color='royalblue', label='Simulation')
+    plt.axvline(x=2.269, color='red', linestyle='--', label='Critical T')
+    plt.xlabel(r'Temperature ($k_BT/J$)')
+    plt.ylabel(r'Energy per spin ($E/J$)')
+    plt.legend()
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig('Results/ising_energy.png', dpi=300, bbox_inches='tight')
+    plt.close()
     
     # Gráfico de magnetización
-    ax[1].plot(Ts, Ms, 'o-', color='darkorange', label='Simulation')
-    ax[1].axvline(x=2.269, color='red', linestyle='--')
-    ax[1].set_xlabel(r'Temperature ($k_BT/J$)')
-    ax[1].set_ylabel('Magnetization per spin')
-    ax[1].grid(alpha=0.3)
+    plt.figure(figsize=(8, 5))
+    plt.plot(Ts, Ms, 'o-', color='darkorange', label='Simulation')
+    plt.axvline(x=2.269, color='red', linestyle='--')
+    plt.xlabel(r'Temperature ($k_BT/J$)')
+    plt.ylabel('Magnetization per spin')
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig('Results/ising_magnetization.png', dpi=300, bbox_inches='tight')
+    plt.close()
     
     # Gráfico de capacidad calorífica
-    ax[2].plot(Ts, Cs, 'o-', color='forestgreen', label='Simulation')
-    ax[2].axvline(x=2.269, color='red', linestyle='--')
-    ax[2].set_xlabel(r'Temperature ($k_BT/J$)')
-    ax[2].set_ylabel(r'Heat Capacity ($C/k_B$)')
-    ax[2].grid(alpha=0.3)
-    
+    plt.figure(figsize=(8, 5))
+    plt.plot(Ts, Cs, 'o-', color='forestgreen', label='Simulation')
+    plt.axvline(x=2.269, color='red', linestyle='--')
+    plt.xlabel(r'Temperature ($k_BT/J$)')
+    plt.ylabel(r'Heat Capacity ($C/k_B$)')
+    plt.grid(alpha=0.3)
     plt.tight_layout()
-    plt.savefig('ising_results.png', dpi=300, bbox_inches='tight')
+    plt.savefig('Results/ising_heat_capacity.png', dpi=300, bbox_inches='tight')
     plt.close()
 
     # Graficar configuraciones de espines para temperaturas seleccionadas
