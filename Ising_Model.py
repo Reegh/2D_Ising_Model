@@ -24,6 +24,7 @@ class IsingModel2D:
         self.h = h
         # Inicialización aleatoria de espines (+1 o -1)
         self.spins = np.random.choice([-1, 1], size=(L, L)).astype(np.int8)  # int8 para ahorrar memoria
+        self.initial_spins = self.spins.copy()
         self.temperature = None
 
     @staticmethod
@@ -56,7 +57,7 @@ class IsingModel2D:
         """Calcula la magnetización promedio por espín."""
         return np.mean(self.spins)
 
-    def simulate(self, temperature, n_steps=5000, eq_steps=1500):
+    def simulate(self, temperature, n_steps=10000, eq_steps=2000):
         """
         Ejecuta la simulación para una temperatura dada.
         
@@ -104,9 +105,12 @@ def simulate_at_temperature(args):
     T, L, n_steps, seed = args
     np.random.seed(seed)  # Semilla única por proceso
     model = IsingModel2D(L=L)
-    return model.simulate(T, n_steps=n_steps)
+    initial_spins = model.spins.copy()  # Guardamos la configuración inicial
+    result = model.simulate(T, n_steps=n_steps)
+    result['initial_spins'] = initial_spins  # Añadimos los espines iniciales al resultado
+    return result
 
-def run_temperature_sweep(L=50, T_min=1.0, T_max=3.5, n_T=20, n_steps=5000):
+def run_temperature_sweep(L=50, T_min=1.0, T_max=3.5, n_T=20, n_steps=10000):
     """
     Barrido de temperaturas en paralelo.
     
@@ -129,6 +133,33 @@ def run_temperature_sweep(L=50, T_min=1.0, T_max=3.5, n_T=20, n_steps=5000):
         ))
     
     return sorted(results, key=lambda x: x['temperature'])
+
+def plot_spin_configurations(initial_spins, final_spins, temperature):
+    """Visualiza las configuraciones inicial y final de los espines."""
+    # Creamos la figura con un diseño manual
+    fig = plt.figure(figsize=(12, 6))
+    
+    # Añadimos los subplots con posiciones manuales
+    ax1 = fig.add_axes([0.05, 0.1, 0.4, 0.8])  # [left, bottom, width, height]
+    ax2 = fig.add_axes([0.5, 0.1, 0.4, 0.8])
+    
+    # Configuración inicial
+    im1 = ax1.imshow(initial_spins, cmap='coolwarm', vmin=-1, vmax=1)
+    ax1.set_title(f'Configuración inicial (T = {temperature:.3f})')
+    ax1.axis('off')
+    
+    # Configuración final
+    im2 = ax2.imshow(final_spins, cmap='coolwarm', vmin=-1, vmax=1)
+    ax2.set_title(f'Configuración final (T = {temperature:.3f})')
+    ax2.axis('off')
+    
+    # Barra de color compartida
+    cax = fig.add_axes([0.92, 0.1, 0.02, 0.8])  # Posición de la barra de color
+    fig.colorbar(im2, cax=cax, label='Spin value')
+    cax.set_yticks([-1, 0, 1])
+    
+    plt.savefig(f'spin_configs_T_{temperature:.3f}.png', dpi=300, bbox_inches='tight')
+    plt.close()
 
 def plot_results(results):
     """Visualización profesional de los resultados."""
@@ -165,14 +196,23 @@ def plot_results(results):
     plt.savefig('ising_results.png', dpi=300, bbox_inches='tight')
     plt.close()
 
+    # Graficar configuraciones de espines para temperaturas seleccionadas
+    for result in results:
+        if result['temperature'] in [min(Ts), 2.0, 2.269, max(Ts)]:  # Temperaturas clave
+            plot_spin_configurations(
+                initial_spins=result['initial_spins'],
+                final_spins=result['final_spins'],
+                temperature=result['temperature']
+            )
+
 if __name__ == "__main__":
     # Parámetros optimizados para buen balance velocidad-calidad
     results = run_temperature_sweep(
-        L=40,              # Tamaño balanceado
+        L=50,              # Tamaño balanceado
         T_min=1.0,         # Rango térmico
         T_max=3.5,
         n_T=25,            # Puntos de temperatura
-        n_steps=5000       # Pasos totales (500 de equilibración)
+        n_steps=10000       # Pasos totales (500 de equilibración)
     )
     
     plot_results(results)
