@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm  # Para barra de progreso
 from numba import jit  # Para aceleración JIT
@@ -57,7 +58,7 @@ class IsingModel2D:
         """Calcula la magnetización promedio por espín."""
         return np.mean(self.spins)
 
-    def simulate(self, temperature, n_steps=10000, eq_steps=2000):
+    def simulate(self, temperature, n_steps=10000, eq_steps=2000, capture_frames=False, frame_interval=50):
         """
         Ejecuta la simulación para una temperatura dada.
         
@@ -70,6 +71,7 @@ class IsingModel2D:
             dict: Resultados de la simulación
         """
         self.temperature = temperature
+        frames = [self.spins.copy()] if capture_frames else []
         
         # Fase de equilibración
         for _ in range(eq_steps):
@@ -83,17 +85,25 @@ class IsingModel2D:
             self.metropolis_step()
             energies[step] = self.calculate_energy()
             magnetizations[step] = self.calculate_magnetization()
+
+            if capture_frames and step % frame_interval == 0:
+                frames.append(self.spins.copy())
         
         # Cálculo de observables termodinámicos
         avg_E = np.mean(energies)
         var_E = np.var(energies)
         
+        if capture_frames:
+                frames.append(self.spins.copy())
+
         return {
             'temperature': temperature,
             'avg_energy': avg_E / (self.L**2),
             'abs_magnetization': np.mean(np.abs(magnetizations)),
             'heat_capacity': var_E / (temperature**2 * self.L**2),
-            'final_spins': self.spins.copy()
+            'initial_spins': self.initial_spins,
+            'final_spins': self.spins.copy(),
+            'frames': frames if capture_frames else None  # << Solo cuando se pide
         }
 
 def simulate_at_temperature(args):
@@ -106,8 +116,15 @@ def simulate_at_temperature(args):
     np.random.seed(seed)  # Semilla única por proceso
     model = IsingModel2D(L=L)
     initial_spins = model.spins.copy()  # Guardamos la configuración inicial
-    result = model.simulate(T, n_steps=n_steps)
-    result['initial_spins'] = initial_spins  # Añadimos los espines iniciales al resultado
+    
+    capture_frames = T in [1.0, 2.0, 2.269, 3.5]
+    result = model.simulate(
+        T,
+        n_steps=n_steps,
+        capture_frames=capture_frames,
+        frame_interval=30
+    )
+    result['initial_spins'] = initial_spins
     return result
 
 def run_temperature_sweep(L=50, T_min=1.0, T_max=3.5, n_T=20, n_steps=10000):
@@ -212,6 +229,36 @@ def plot_results(results):
                 final_spins=result['final_spins'],
                 temperature=result['temperature']
             )
+            if result.get('frames') is not None:
+                animate_spin_frames(result['frames'], result['temperature'])
+
+def animate_spin_frames(frames, temperature):
+    import matplotlib.pyplot as plt
+    import matplotlib.animation as animation
+    import os
+
+    os.makedirs('Results', exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(5, 5))
+    im = ax.imshow(frames[0], cmap='coolwarm', vmin=-1, vmax=1)
+    ax.axis('off')
+    ax.set_title(f'Spin Evolution (T = {temperature:.3f})')
+
+    def update(frame):
+        im.set_data(frame)
+        return [im]
+
+    ani = animation.FuncAnimation(
+        fig, update, frames=frames, blit=True, interval=100
+    )
+
+    # Guardar como GIF
+    #ani.save(f"Results/spin_animation_T_{temperature:.3f}.gif", writer='pillow')
+
+    # Guardar como MP4 (requiere ffmpeg)
+    ani.save(f"Results/spin_animation_T_{temperature:.3f}.mp4", writer='ffmpeg', fps=10)
+
+    plt.close()
 
 if __name__ == "__main__":
     # Parámetros optimizados para buen balance velocidad-calidad
@@ -220,8 +267,8 @@ if __name__ == "__main__":
         T_min=1.0,         # Rango térmico
         T_max=3.5,
         n_T=25,            # Puntos de temperatura
-        n_steps=10000       # Pasos totales (500 de equilibración)
+        n_steps=10000      # Pasos totales (2000 de equilibración)
     )
     
     plot_results(results)
-    print("¡Simulación completada! Resultados guardados en 'ising_results.png'")
+    print("¡Simulación completada! Resultados guardados en Results")
