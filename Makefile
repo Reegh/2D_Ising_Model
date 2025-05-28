@@ -25,8 +25,4 @@ run:
 install:
 	ising_model/bin/pip install -r requirements.txt
 
-test:
-	@source $(VENV)/bin/activate && \
-	python -m tests.tests_funciones_objetos
-
 build: banner create install run 
