@@ -1,0 +1,14 @@
+Model:
+  matrix: 50
+  initial.temp: 1.0
+  final.temp: 3.5
+  temp.points: 25
+  coupling: 1.0
+  magnetic: 0.0
+
+Carlo:
+  steps: 10000
+  equilibrium: 2000
+
+Video:
+  frames: 30

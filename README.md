@@ -56,6 +56,7 @@ to initialize the simulation.
 - [main.py](main.py)
 - [requirements.txt](requirements.txt)
 - [README.md](README.md)
+- [config.yaml](config.yaml)
 
 ## Simulation parameters
 | Parameter | Default Value    | Description |
@@ -67,6 +68,8 @@ to initialize the simulation.
 | `eq_steps`| 2000             | Balancing steps |
 | `n_T`     | 20               | Number of temperature points |
 | `T_min/max`| 1.0 - 3.5       | Temperatures range |
+
+These parameters can be edited in the file [config.yaml](config.yaml)
 
 ## Results obtained
 ### Average magnetization
@@ -84,5 +87,6 @@ The pronounced peak at $T\approx 2.3$ signals the phase transition. The asymmetr
 ### Spin configuration
 ![At1](Results/spin_configs_T_1.000.png)
 At $T=1.0$: Large magnetic domains with few anti-aligned regions, typical of ordered phases.
+
 ![At3](Results/spin_configs_T_3.500.png)
 At $T=3.5$: Completely disordered spins (paramagnetic phase), with random distribution averaging to zero magnetization.

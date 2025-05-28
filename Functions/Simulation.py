@@ -2,6 +2,15 @@ import numpy as np
 from tqdm import tqdm  # Progress bar
 from multiprocessing import Pool, cpu_count
 from Functions.Ising_Model import IsingModel2D
+import yaml
+from pathlib import Path
+
+def cargar_config():
+    ruta_config = Path(__file__).parent.parent / "config.yaml"
+    
+    with open(ruta_config, 'r') as archivo:
+        return yaml.safe_load(archivo) 
+config = cargar_config()
 
 def simulate_at_temperature(args):
     """
@@ -14,17 +23,17 @@ def simulate_at_temperature(args):
     model = IsingModel2D(L=L)
     initial_spins = model.spins.copy()  # Saves the initial configuration
     
-    capture_frames = T in [1.0, 2.0, 2.269, 3.5]
+    capture_frames = T in [config["Model"]["initial.temp"], 2.0, 2.269, config["Model"]["final.temp"]]
     result = model.simulate(
         T,
         n_steps=n_steps,
         capture_frames=capture_frames,
-        frame_interval=30
+        frame_interval=config["Video"]["frames"]
     )
     result['initial_spins'] = initial_spins
     return result
 
-def run_temperature_sweep(L=50, T_min=1.0, T_max=3.5, n_T=20, n_steps=10000):
+def run_temperature_sweep(L=config["Model"]["matrix"], T_min=config["Model"]["initial.temp"], T_max=config["Model"]["final.temp"], n_T=config["Model"]["temp.points"], n_steps=config["Carlo"]["steps"]):
     """
     Parallel temperature sweep.
     

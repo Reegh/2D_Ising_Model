@@ -1,8 +1,17 @@
 import numpy as np
 from numba import jit  # For JIT acceleration
+import yaml
+from pathlib import Path
+
+def cargar_config():
+    ruta_config = Path(__file__).parent.parent / "config.yaml"
+    
+    with open(ruta_config, 'r') as archivo:
+        return yaml.safe_load(archivo) 
+config = cargar_config()
 
 class IsingModel2D:
-    def __init__(self, L=50, J=1.0, h=0.0):
+    def __init__(self, L=config["Model"]["matrix"], J=config["Model"]["coupling"], h=config["Model"]["magnetic"]):
         """
         Initializes the 2D Ising-Model
         
@@ -49,7 +58,7 @@ class IsingModel2D:
         """Calculates the average magnetización per spin."""
         return np.mean(self.spins)
 
-    def simulate(self, temperature, n_steps=10000, eq_steps=2000, capture_frames=False, frame_interval=50):
+    def simulate(self, temperature, n_steps=config["Carlo"]["steps"], eq_steps=config["Carlo"]["equilibrium"], capture_frames=False, frame_interval=config["Video"]["frames"]):
         """
         Runs the simulation for a given temperature.
         
@@ -57,6 +66,8 @@ class IsingModel2D:
             temperature (float): Temperature in units of J/kB
             n_steps (int): Total Monte Carlo steps
             eq_steps (int): Balancing steps (discarded)
+            capture_frames (boolean): False
+            frame_interval (int): Number of frames
         
         Returns:
             dict: Simulations results
