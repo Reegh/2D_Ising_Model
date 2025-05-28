@@ -2,14 +2,14 @@ from Functions.Simulation import run_temperature_sweep
 from Functions.Graphics import plot_results
 
 if __name__ == "__main__":
-    # Parámetros optimizados para buen balance velocidad-calidad
+    # Optimized parameters for a good speed-quality balance
     results = run_temperature_sweep(
-        L=50,              # Tamaño balanceado
-        T_min=1.0,         # Rango térmico
+        L=50,              # Balanced size
+        T_min=1.0,         # Heat rating
         T_max=3.5,
-        n_T=25,            # Puntos de temperatura
-        n_steps=10000      # Pasos totales (2000 de equilibración)
+        n_T=25,            # Temperature points
+        n_steps=10000      # Total steps (2000 balancing)
     )
     
     plot_results(results)
-    print("¡Simulación completada! Resultados guardados en Results")
+    print("Simulation completed! Results saved in Results")

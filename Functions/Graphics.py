@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-# Configuración de estilo para los gráficos
+# Style settings
 plt.style.use('seaborn-v0_8')
 plt.rcParams['figure.dpi'] = 100
 plt.rcParams['font.size'] = 12
 
 def plot_results(results):
-    """Visualización profesional de los resultados."""
+    """Professional visualization of results."""
     Ts = np.array([r['temperature'] for r in results])
     Es = np.array([r['avg_energy'] for r in results])
     Ms = np.array([r['abs_magnetization'] for r in results])
@@ -17,7 +17,7 @@ def plot_results(results):
     
     fig, ax = plt.subplots(3, 1, figsize=(10, 12))
     
-    # Gráfico de energía
+    # Energy graph
     plt.figure(figsize=(8, 5))
     plt.plot(Ts, Es, 'o-', color='royalblue', label='Simulation')
     plt.axvline(x=2.269, color='red', linestyle='--', label='Critical T')
@@ -29,7 +29,7 @@ def plot_results(results):
     plt.savefig('Results/ising_energy.png', dpi=300, bbox_inches='tight')
     plt.close()
     
-    # Gráfico de magnetización
+    # Magnetization graph
     plt.figure(figsize=(8, 5))
     plt.plot(Ts, Ms, 'o-', color='darkorange', label='Simulation')
     plt.axvline(x=2.269, color='red', linestyle='--')
@@ -40,7 +40,7 @@ def plot_results(results):
     plt.savefig('Results/ising_magnetization.png', dpi=300, bbox_inches='tight')
     plt.close()
     
-    # Gráfico de capacidad calorífica
+    # Heat capacity graph
     plt.figure(figsize=(8, 5))
     plt.plot(Ts, Cs, 'o-', color='forestgreen', label='Simulation')
     plt.axvline(x=2.269, color='red', linestyle='--')
@@ -51,9 +51,9 @@ def plot_results(results):
     plt.savefig('Results/ising_heat_capacity.png', dpi=300, bbox_inches='tight')
     plt.close()
 
-    # Graficar configuraciones de espines para temperaturas seleccionadas
+    # Plot spin configurations for selected temperatures
     for result in results:
-        if result['temperature'] in [min(Ts), 2.0, 2.269, max(Ts)]:  # Temperaturas clave
+        if result['temperature'] in [min(Ts), 2.0, 2.269, max(Ts)]:  # Key temperatures
             plot_spin_configurations(
                 initial_spins=result['initial_spins'],
                 final_spins=result['final_spins'],
@@ -79,36 +79,36 @@ def animate_spin_frames(frames, temperature):
         fig, update, frames=frames, blit=True, interval=100
     )
 
-    # Guardar como GIF
+    # Save as GIF
     #ani.save(f"Results/spin_animation_T_{temperature:.3f}.gif", writer='pillow')
 
-    # Guardar como MP4 (requiere ffmpeg)
+    # Save as MP4 (requires ffmpeg)
     ani.save(f"Results/spin_animation_T_{temperature:.3f}.mp4", writer='ffmpeg', fps=10)
 
     plt.close()
 
 
 def plot_spin_configurations(initial_spins, final_spins, temperature):
-    """Visualiza las configuraciones inicial y final de los espines."""
-    # Creamos la figura con un diseño manual
+    """Visualize the initial and final configurations of the spins."""
+    # Creates the figure with a manual design
     fig = plt.figure(figsize=(12, 6))
     
-    # Añadimos los subplots con posiciones manuales
+    # Adds subplots with manual positions
     ax1 = fig.add_axes([0.05, 0.1, 0.4, 0.8])  # [left, bottom, width, height]
     ax2 = fig.add_axes([0.5, 0.1, 0.4, 0.8])
     
-    # Configuración inicial
+    # Initial configuration
     im1 = ax1.imshow(initial_spins, cmap='coolwarm', vmin=-1, vmax=1)
     ax1.set_title(f'Initial Configuration (T = {temperature:.3f})')
     ax1.axis('off')
     
-    # Configuración final
+    # Final configuration
     im2 = ax2.imshow(final_spins, cmap='coolwarm', vmin=-1, vmax=1)
     ax2.set_title(f'Final Configuration (T = {temperature:.3f})')
     ax2.axis('off')
     
-    # Barra de color compartida
-    cax = fig.add_axes([0.92, 0.1, 0.02, 0.8])  # Posición de la barra de color
+    # Shared color bar
+    cax = fig.add_axes([0.92, 0.1, 0.02, 0.8])  # Color bar position
     fig.colorbar(im2, cax=cax, label='Spin value')
     cax.set_yticks([-1, 0, 1])
     

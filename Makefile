@@ -18,7 +18,7 @@ create:
 	python3 -m venv ising_model
 
 run:
-	@echo "Ejecutando simulación..."
+	@echo "Running simulation..."
 	@source $(VENV)/bin/activate && \
 	$(PYTHON) $(MAIN)
 
