@@ -11,11 +11,11 @@ You should clone the repository into your local machine. Just copy this command:
 ```bash
 git clone https://github.com/Reegh/2D_Ising_Model.git
 ```
-I used python3 for this project, you can check your version with the following command:
+Python3 was used for this project, you can check your version with the following command:
 ```bash
 python3 --version
 ```
-in case it doesn´t work, you can check with
+in case it doesn't work, you can check with
 ```bash
 python --version
 ```
@@ -66,7 +66,7 @@ to initialize the simulation.
 | `h`       | 0.0              | External magnetic field |
 | `n_steps` | 10000            | Total Monte Carlo steps |
 | `eq_steps`| 2000             | Balancing steps |
-| `n_T`     | 20               | Number of temperature points |
+| `n_T`     | 25               | Number of temperature points |
 | `T_min/max`| 1.0 - 3.5       | Temperatures range |
 
 These parameters can be edited in the file [config.yaml](config.yaml)
