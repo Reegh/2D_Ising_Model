@@ -14,9 +14,9 @@ config = cargar_config()
 
 def simulate_at_temperature(args):
     """
-    Función wrapper para multiprocesamiento.
+    Wrapper function for multiprocessing.
     Args:
-        args: Tupla con (T, L, n_steps, seed)
+        args: Tuple with (T, L, n_steps, seed)
     """
     T, L, n_steps, seed = args
     np.random.seed(seed)  # Single seed per process
